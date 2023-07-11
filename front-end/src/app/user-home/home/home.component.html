@@ -1,0 +1,83 @@
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <span class="fs-5 d-none d-sm-inline">Menu</span>
+                </a>
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <div *ngIf="user" class="dropdown pb-4">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="d-none d-sm-inline mx-1">{{user.email}}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="#" (click)="logout()">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col py-3 card" style="padding: 3em; margin: 1.5em;">
+
+            <div *ngIf="loading" class="spinner-grow text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <div *ngIf="error" class="alert alert-danger" role="alert">
+                An error occurred when trying to fetch your information. <br />
+                {{ error }}
+            </div>
+
+            <div *ngIf="user">
+                <div *ngIf="user.addresses == null" class="alert alert-warning" role="alert">
+                    You do not have addresses associated with this account.
+                </div>
+
+                <table *ngIf="user.addresses" class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Apelido</th>
+                            <th scope="col">Number</th>
+                            <th scope="col">Street</th>
+                            <th scope="col">Distrinct</th>
+                            <th scope="col">City</th>
+                            <th scope="col">State</th>
+                            <th scope="col">Country</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let address of user.addresses | paginate: {
+                    itemsPerPage: pageSize,
+                    currentPage: page,
+                    totalItems: user.addresses.length }">
+                            <th>{{ address.apelido }}</th>
+                            <th>{{ address.number }}</th>
+                            <th>{{ address.street }}</th>
+                            <th>{{ address.district }}</th>
+                            <th>{{ address.city }}</th>
+                            <th>{{ address.state }}</th>
+                            <th>{{ address.country }}</th>
+                            <th>
+                                <a routerLink="/users/address/{{address.id}}" class="btn btn-link"><strong>Edit</strong></a>
+                                <delete-address [id]="address.id"></delete-address>
+                            </th>
+                        </tr>
+                        <tr>
+                            <pagination-controls (pageChange)="handlePageChange($event)"></pagination-controls>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <button (click)="addAddress()" type="button" class="btn btn-primary">Add address</button>
+        </div>
+    </div>
+</div>
